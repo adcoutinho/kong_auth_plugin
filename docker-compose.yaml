@@ -31,7 +31,7 @@ services:
         condition: service_healthy
 
   kong-control-plane:
-    build: .
+    image: kong:3
     command: kong start --vv
     networks:
         - kong-net
@@ -52,6 +52,7 @@ services:
       - KONG_ADMIN_GUI_URL=http://localhost:8002
       - KONG_CLUSTER_LISTEN=0.0.0.0:8005
       - KONG_ADMIN_GUI_LISTEN=0.0.0.0:8002
+      - KONG_DECLARATIVE_CONFIG=/etc/kong/config/kong.yaml
     volumes:
       - certs:/certs
       - ./scripts/init-kong.sh:/init-kong.sh
@@ -67,6 +68,7 @@ services:
 
   kong-data-plane:
     image: kong:3
+    command: /docker-entrypoint.sh kong docker-start
     networks:
         - kong-net
     environment:
